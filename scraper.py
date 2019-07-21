@@ -12,10 +12,15 @@ def get_all_urls():
 		bs = BeautifulSoup(html.read(), 'lxml')
 
 		cars = bs.findAll('div', {'class': 'cycle off'})
+		count = 1 
 
-		for car in cars:
-			res = get_car_data(car.a['href'])
-			write_to_csv(res)
+		if cars:
+			for car in cars:
+				res = get_car_data(car.a['href'])
+				write_to_csv(res, count)
+				count += 1
+		else:
+			break
 
 def get_car_data(url):
 
@@ -27,16 +32,20 @@ def get_car_data(url):
 
 	car.append(full_url)
 	car.append(data.find('div', {'class': 'price-now'}).select('span.value')[0].get_text().strip())
+
+	for title in data.find('div', {'class': 'title module'}).find_all('span'):
+		car.append(title.getText().strip())
+
 	for prop in data.find(True, {'class': 'overview-data-standard'}).find_all(True, {'class': 'value'}):
 		car.append(prop.getText().strip())
 
 	return car
 
-def write_to_csv(car):
+def write_to_csv(car, count):
 	with open("namauto.csv", 'a', newline='') as f: 
 		writer = csv.writer(f)
 		writer.writerows([car])
-		print('Added...')
+		print('Added...{}'.format(count))
 
 if __name__ == '__main__':
 	get_all_urls()
