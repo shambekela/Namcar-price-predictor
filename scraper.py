@@ -5,8 +5,8 @@ import csv
 
 def get_all_urls():
 	# iterate over the different urls
-	for page in range(1):
-		url = 'https://www.namauto.com/cars/?order=price&page={}&per_page=12'.format(page)
+	for page in range(1, 100):
+		url = 'https://www.namauto.com/cars/?order=price&page={}&per_page=72'.format(page)
 
 		html = urlopen(url)
 		bs = BeautifulSoup(html.read(), 'lxml')
