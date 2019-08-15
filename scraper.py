@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import json
 import csv
 
-counter = 1 
+counter = 1 # keep track of progress 
 
 def get_all_urls():
 	# iterate over the different urls
