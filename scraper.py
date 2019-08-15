@@ -7,7 +7,7 @@ counter = 1 # keep track of progress
 
 def get_all_urls():
 	# iterate over the different urls
-	for page in range(1):
+	for page in range(1, 100):
 		url = 'https://www.namauto.com/cars/?order=price&page={}&per_page=72'.format(page)
 
 		html = urlopen(url)
