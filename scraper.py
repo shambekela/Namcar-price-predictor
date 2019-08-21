@@ -12,7 +12,7 @@ all_cars = []
 def get_all_urls():
     # iterate over the different urls
     for page in range(1, 100):
-        url = 'https://www.namauto.com/cars/?order=price&page={}&per_page=72'.format(page)
+        url = 'https://www.namauto.com/cars/?order=price&page={}&per_page=24'.format(page)
 
         html = urlopen(url)
         bs = BeautifulSoup(html.read(), 'lxml')
@@ -77,7 +77,7 @@ def write_to_dataframe(car):
     quoted = urllib.parse.quote_plus(r"DRIVER={SQL Server Native Client 11.0};SERVER=DESKTOP-R64COUI;DATABASE=Shambekela;Trusted_Connection=yes")
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
 
-    df.to_sql('namauto', schema='dbo', con = engine, if_exists='replace')
+    df.to_sql('namauto', schema='dbo', con = engine, if_exists='append')
 
     result = engine.execute('select count(*) from dbo.namauto')
     result.fetchall()
