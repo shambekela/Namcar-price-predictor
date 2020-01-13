@@ -2,9 +2,10 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import json
 import pandas as pd
-import pyodbc
+#import pyodbc
 from sqlalchemy import create_engine
 import urllib
+import os
 
 counter = 1 # keep track of progress
 all_cars = []
@@ -25,13 +26,15 @@ def get_all_urls():
                 global all_cars
                 all_cars.append(res)
                 global counter
-                print('Counter at {}'.format(str(counter)))
+                print('Counter at {} : '.format(str(counter)), car.a['href'])
                 counter += 1
         else:
             break
 
+
         write_to_dataframe(all_cars)
         all_cars = []
+
 
 def get_car_data(url):
 
@@ -46,17 +49,28 @@ def get_car_data(url):
     for span in data.find('div', {'class': 'price-now'}).find_all('span', {'class': 'value'}):
         car.append(span.getText())
     
-    for title in data.find('div', {'class': 'title module'}).find_all('span'):
-        car.append(title.getText()) #make model variant
+    title = data.find('div', {'class': 'title module'}).find_all('span')
 
-    for prop in data.find(True, {'class': 'overview-data-standard'}).find_all(True, {'class': 'value'}):
+
+    ## make
+    car.append(title[0].getText()) 
+    # combine model variant
+    car.append(title[1].getText() + ' ' + title[2].getText())
+
+
+    for prop in data.find(True, {'class': 'overview-data-featured'}).find_all(True, {'class': 'value'}):
         car.append(prop.getText().strip())
-        #car.append(prop.attrs['class'][1])
+
+    car.append("None") # empty value to match data to number of columns
+
     return car
 
 
 def write_to_dataframe(car):
-    df = pd.DataFrame(data = car, columns = ['url',
+
+    '''
+    df = pd.DataFrame(data = car, columns = 
+        ['url',
         'price',
         'make',
         'model',
@@ -73,14 +87,29 @@ def write_to_dataframe(car):
         'mileage',
         'engine-size',
         'transmission'])
+    '''
+
+    df = pd.DataFrame(data = car, columns = [
+    'link',
+    'price',
+    'manufacturer',
+    'model',
+    'reg-year',
+    'mileage',
+    'engine-size',
+    'transmission',
+    'fuel-type',
+    'drive',
+    'finance'])
+
+    path = os.path.join(os.getcwd(),r'data\\namauto14012020.csv')
+
+    if not os.path.isfile(path):
+       df.to_csv(path, index=False)
+    else: # else it exists so append without writing the header
+       df.to_csv(path, mode="a", index=False, header=False)
     
-    quoted = urllib.parse.quote_plus(r"DRIVER={SQL Server Native Client 11.0};SERVER=DESKTOP-R64COUI;DATABASE=Shambekela;Trusted_Connection=yes")
-    engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
-
-    df.to_sql('namauto', schema='dbo', con = engine, if_exists='append')
-
-    result = engine.execute('select count(*) from dbo.namauto')
-    result.fetchall()
+    print('Added to csv------------------------------------------------')
 
 if __name__ == '__main__':
     get_all_urls()

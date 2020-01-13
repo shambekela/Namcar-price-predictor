@@ -56,7 +56,18 @@ def get_car_data(url):
 	return car_attr
 
 def write_to_dataframe(car):
-	df = pd.DataFrame(data=car, columns=['link', 'price', 'manufacturer', 'model' , 'reg-year', 'mileage', 'engine-size', 'fuel-type', 'transmission', 'drive', 'finance'])
+	df = pd.DataFrame(data=car, columns=
+		['link', 
+		 'price', 
+		 'manufacturer', 
+		 'model' , 
+		 'reg-year', 
+		 'mileage', 
+		 'engine-size', 
+		 'fuel-type', 
+		 'transmission', 
+		 'drive', 
+		 'finance'])
 
 	path = os.path.join(os.getcwd(),r'data\\namcars12012020.csv')
 
